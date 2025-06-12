@@ -2,21 +2,21 @@ function generateEmailTable(components) {
   let rows = components.map(comp => {
     if (comp.type === 'text') {
       const style = comp.style || {};
-      return \`<tr><td style="
+      return \+<tr><td style="
         font-size: \${style.fontSize}px;
         font-weight: \${style.fontWeight};
         text-align: \${style.textAlign};
         color: \${style.color};
         font-family: Arial, sans-serif;
-      ">\${comp.content}</td></tr>\`;
+      ">\${comp.content}</td></tr>\+;
     }
     if (comp.type === 'image') {
-      return \`<tr><td><img src="\${comp.url}" width="100%" style="display:block;" /></td></tr>\`;
+      return \+<tr><td><img src="\${comp.url}" width="100%" style="display:block;" /></td></tr>\+;
     }
     return '';
   }).join('\n');
 
-  return \`
+  return \+
   <!DOCTYPE html>
   <html>
   <body>
@@ -24,7 +24,7 @@ function generateEmailTable(components) {
       \${rows}
     </table>
   </body>
-  </html>\`;
+  </html>\+;
 }
 
 module.exports = { generateEmailTable };
