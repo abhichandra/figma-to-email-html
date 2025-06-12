@@ -4,20 +4,35 @@ const axios = require('axios');
 const parseFigmaData = require('../services/figmaParser');
 
 router.get('/html', async (req, res) => {
-  const { fileKey } = req.query;
-  if (!fileKey) return res.status(400).send("fileKey required");
+  const { fileKey, nodeId } = req.query;
+  if (!fileKey) return res.status(400).send("Missing fileKey");
+
+  const baseUrl = `https://api.figma.com/v1/files/${fileKey}`;
+  const headers = {
+    'X-Figma-Token': process.env.FIGMA_TOKEN
+  };
 
   try {
-    const response = await axios.get(`https://api.figma.com/v1/files/${fileKey}`, {
-      headers: {
-        'X-Figma-Token': process.env.FIGMA_TOKEN
-      }
-    });
+    let documentData;
 
-    const html = parseFigmaData(response.data.document);
+    if (nodeId) {
+      // Fetch specific node
+      const response = await axios.get(`${baseUrl}/nodes?ids=${nodeId}`, { headers });
+      const nodeData = response.data.nodes[nodeId];
+      if (!nodeData || !nodeData.document) {
+        return res.status(404).send("Node not found or invalid nodeId");
+      }
+      documentData = nodeData.document;
+    } else {
+      // Fetch entire file
+      const response = await axios.get(baseUrl, { headers });
+      documentData = response.data.document;
+    }
+
+    const html = parseFigmaData(documentData);
     res.send(html);
   } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).send("Error fetching from Figma API: " + err.message);
   }
 });
 
