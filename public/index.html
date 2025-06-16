@@ -63,4 +63,18 @@
       try {
         const res = await fetch(url);
         const html = await res.text();
-        output.valu
+        output.value = html;
+        preview.srcdoc = html;
+        section.style.display = "block";
+      } catch (err) {
+        output.value = "❌ Error: " + err.message;
+      }
+    }
+
+    function toggleTab(view) {
+      document.getElementById("codeView").style.display = view === "code" ? "block" : "none";
+      document.getElementById("previewView").style.display = view === "preview" ? "block" : "none";
+    }
+  </script>
+</body>
+</html>
